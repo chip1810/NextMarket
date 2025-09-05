@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "name": "@my-workspace/source",
   "version": "0.0.0",
   "license": "MIT",
@@ -82,4 +83,13 @@
   "serve:all": "nx run-many --target=serve --projects=frontend,backend --parallel"
 }
 
+=======
+  "devDependencies": {
+    "@nestjs/testing": "^11.1.6",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "jest": "^30.1.1",
+    "ts-jest": "^29.4.1"
+  }
+>>>>>>> e37ae25 (toansaohoa)
 }
