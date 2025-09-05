@@ -1,21 +1,13 @@
-import React, { useEffect, useState } from 'react';
+// src/app.tsx
+import React from 'react';
+import { AuthForm } from './components/AuthForm';
 
-function App() {
-  const [data, setData] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:3000/api') // hoặc '/' nếu bạn set proxy
-      .then(res => res.json())
-      .then(json => setData(json.message))
-      .catch(err => console.error(err));
-  }, []);
-
+const App: React.FC = () => {
   return (
     <div>
-      <h1>Frontend gọi backend:</h1>
-      <p>{data}</p>
+      <AuthForm />
     </div>
   );
-}
+};
 
 export default App;

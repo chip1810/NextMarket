@@ -2,7 +2,6 @@
   "name": "@my-workspace/source",
   "version": "0.0.0",
   "license": "MIT",
-  "scripts": {},
   "private": true,
   "devDependencies": {
     "@eslint/js": "^9.8.0",
@@ -71,15 +70,24 @@
     "@nestjs/common": "^11.0.0",
     "@nestjs/core": "^11.0.0",
     "@nestjs/platform-express": "^11.0.0",
+    "@nestjs/swagger": "^11.2.0",
+    "@nestjs/typeorm": "^11.0.0",
     "axios": "^1.6.0",
+    "bootstrap": "^5.3.8",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.2",
+    "mysql2": "^3.14.4",
     "react": "19.0.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "19.0.0",
     "react-router-dom": "6.29.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.0"
+    "rxjs": "^7.8.0",
+    "swagger-ui-express": "^5.0.1",
+    "typeorm": "^0.3.26",
+    "uuid": "^11.1.0"
   },
   "scripts": {
-  "serve:all": "nx run-many --target=serve --projects=frontend,backend --parallel"
-}
-
+    "serve:all": "nx run-many --target=serve --projects=frontend,backend --parallel"
+  }
 }
