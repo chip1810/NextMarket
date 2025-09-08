@@ -1,18 +1,32 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { Product } from './product.entity';
+import { RequirePermissions as Permissions } from '../user/auth/permission.decorator';
+import { PermissionGuard } from '../user/auth/permission.guard';
+import { SessionAuthGuard } from '../user/auth/session-auth.guard';
 
 @Controller('products')
+@UseGuards(SessionAuthGuard, PermissionGuard) // check login + quyền
 export class ProductController {
-  constructor(private readonly service: ProductService) {}
+  constructor(private readonly productService: ProductService) {}
 
   @Get()
-  getAll() {
-    return this.service.findAll();
+  @Permissions('view_product')
+  async findAll() {
+    const products = await this.productService.findAll();
+    return {
+      message: 'Lấy danh sách sản phẩm thành công',
+      total: products.length,
+      data: products,
+    };
   }
 
   @Post()
-  create(@Body() body: Partial<Product>) {
-    return this.service.create(body);
+  async create(@Body() body: Partial<Product>) {
+    const product = await this.productService.create(body);
+    return {
+      message: 'Tạo sản phẩm thành công',
+      data: product,
+    };
   }
 }

@@ -1,6 +1,9 @@
 // user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, OneToMany } from 'typeorm';
 import { UserProfile } from './user-profile.entity';
+import { UserRole } from './user-role.entity';
+
+
 
 @Entity('users')
 export class User {
@@ -35,6 +38,9 @@ export class User {
   cascade: true,
 })
 profile!: UserProfile;
+
+  @OneToMany(() => UserRole, userRole => userRole.user, { cascade: true })
+  roles!: UserRole[];
 
 
 }

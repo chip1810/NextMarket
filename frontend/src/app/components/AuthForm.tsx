@@ -1,9 +1,10 @@
-// src/components/AuthForm.tsx
 import React, { useState } from 'react';
 import { RegisterFormData, LoginFormData } from './types';
+import { useNavigate } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 export const AuthForm: React.FC = () => {
+  const navigate = useNavigate();
   const [isRegister, setIsRegister] = useState(true);
   const [registerData, setRegisterData] = useState<RegisterFormData>({
     username: '',
@@ -17,25 +18,21 @@ export const AuthForm: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginFormData>({ email: '', password: '' });
   const [message, setMessage] = useState('');
 
-  // Chuyển tab
   const toggleForm = () => {
     setMessage('');
     setIsRegister(!isRegister);
   };
 
-  // Handle change cho register
   const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRegisterData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Handle change cho login
   const handleLoginChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLoginData(prev => ({ ...prev, [name]: value }));
   };
 
-  // Submit register
   const handleRegisterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -43,16 +40,16 @@ export const AuthForm: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registerData),
+        credentials: 'include', // ⚡ gửi cookie session kèm request
       });
       const data = await res.json();
-      if (res.ok) setMessage('Registration successful!');
+      if (res.ok) setMessage('Registration successful! Please login.');
       else setMessage(data.message || 'Error during registration');
     } catch (err) {
       setMessage('Network error');
     }
   };
 
-  // Submit login
   const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -60,10 +57,15 @@ export const AuthForm: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(loginData),
+        credentials: 'include', // ⚡ gửi cookie session kèm request
       });
       const data = await res.json();
-      if (res.ok) setMessage(`Welcome ${data.username || data.email}!`);
-      else setMessage(data.message || 'Login failed');
+      if (res.ok) {
+        setMessage('');
+        navigate('/home');
+      } else {
+        setMessage(data.message || 'Login failed');
+      }
     } catch (err) {
       setMessage('Network error');
     }
@@ -72,8 +74,18 @@ export const AuthForm: React.FC = () => {
   return (
     <div className="container mt-5" style={{ maxWidth: '400px' }}>
       <div className="d-flex justify-content-center mb-3">
-        <button className={`btn ${isRegister ? 'btn-primary' : 'btn-outline-primary'} me-2`} onClick={() => setIsRegister(true)}>Register</button>
-        <button className={`btn ${!isRegister ? 'btn-primary' : 'btn-outline-primary'}`} onClick={() => setIsRegister(false)}>Login</button>
+        <button
+          className={`btn ${isRegister ? 'btn-primary' : 'btn-outline-primary'} me-2`}
+          onClick={() => setIsRegister(true)}
+        >
+          Register
+        </button>
+        <button
+          className={`btn ${!isRegister ? 'btn-primary' : 'btn-outline-primary'}`}
+          onClick={() => setIsRegister(false)}
+        >
+          Login
+        </button>
       </div>
 
       {isRegister ? (

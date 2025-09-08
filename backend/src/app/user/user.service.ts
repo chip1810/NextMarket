@@ -41,28 +41,33 @@ export class UserService {
 
     return await this.userRepository.save(user); // cascade save luôn profile
   }
-  async login(dto: LoginDto) {
+async login(dto: LoginDto) {
   const user = await this.userRepository.findOne({
     where: { email: dto.email },
-    relations: ['profile'], // nếu muốn lấy luôn profile
+    relations: [
+      'roles',
+      'roles.role',
+      'roles.role.rolePermissions',
+      'roles.role.rolePermissions.permission',
+    ],
   });
 
-  if (!user) {
-    throw new UnauthorizedException('Invalid credentials');
-  }
+  if (!user) throw new UnauthorizedException('Invalid credentials');
 
   const isMatch = await bcrypt.compare(dto.password, user.password);
-  if (!isMatch) {
-    throw new UnauthorizedException('Invalid credentials');
-  }
+  if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
-  // Trả về user (có thể trả token nếu muốn JWT)
+  const permissions = user.roles.flatMap(ur =>
+    ur.role.rolePermissions.map(rp => rp.permission.code)
+  );
+
   return {
     id: user.id,
-    uuid: user.uuid,
     email: user.email,
-    username: user.username,
-    profile: user.profile,
+    roles: user.roles.map(ur => ur.role.name),
+    permissions,
   };
 }
+
+
 }

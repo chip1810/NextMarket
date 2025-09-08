@@ -1,12 +1,16 @@
 // src/app.tsx
 import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthForm } from './components/AuthForm';
+import { ProductList } from './components/ProductList';
 
 const App: React.FC = () => {
   return (
-    <div>
-      <AuthForm />
-    </div>
+    <Routes>
+      <Route path="/" element={<AuthForm />} />
+      <Route path="/home" element={<ProductList />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
 };
 

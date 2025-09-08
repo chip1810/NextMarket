@@ -12,8 +12,8 @@ import { UserModule } from './user/user.module';
       username: 'root',
       password: '18102004Trung@',
       database: 'EveryMart',
-      autoLoadEntities: true, // 👈 tự load tất cả entity
-      synchronize: false, // không tự tạo bảng, chỉ map
+      autoLoadEntities: true, 
+      synchronize: false, 
     }),
     ProductModule,
     UserModule,
