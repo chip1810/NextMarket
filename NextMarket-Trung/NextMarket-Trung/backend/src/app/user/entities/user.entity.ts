@@ -1,5 +1,5 @@
 // user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne,JoinColumn } from 'typeorm';
 import { UserProfile } from './user-profile.entity';
 
 @Entity('users')
@@ -31,10 +31,10 @@ export class User {
   @Column({ type: 'datetime', nullable: true })
   updated_at!: Date;
 
-@OneToOne(() => UserProfile, (profile) => profile.user, {
-  cascade: true,
-})
-profile!: UserProfile;
+ @OneToOne(() => UserProfile, (profile) => profile.user, {
+    cascade: true,
+  })
+  profile!: UserProfile;
 
 
 }

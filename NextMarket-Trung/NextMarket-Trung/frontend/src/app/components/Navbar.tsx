@@ -1,21 +1,37 @@
 // src/components/Navbar.tsx
 import React from "react";
-import { Navbar, Nav, Container } from "react-bootstrap";
-import { NavLink } from "react-router-dom";
-import {registerUser, loginUser} from "../services/authService";
+import { Navbar, Nav, Container, Button } from "react-bootstrap";
+import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../contexts/AuthContext";
+
 const AppNavbar: React.FC = () => {
+  const { user, isAuthenticated, logout, loading } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  if (loading) {
+    return (
+      <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
+        <Container>
+          <Navbar.Brand>EveryMark</Navbar.Brand>
+        </Container>
+      </Navbar>
+    );
+  }
+
   return (
     <Navbar bg="primary" variant="dark" expand="lg" sticky="top">
       <Container>
-        {/* Logo */}
         <Navbar.Brand as={NavLink} to="/">
           EveryMark
         </Navbar.Brand>
 
-        {/* Toggle cho mobile */}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          {/* Menu links */}
           <Nav className="ms-auto">
             <Nav.Link as={NavLink} to="/" end>
               Home
@@ -23,12 +39,31 @@ const AppNavbar: React.FC = () => {
             <Nav.Link as={NavLink} to="/products">
               Products
             </Nav.Link>
-            <Nav.Link as={NavLink} to="/auth">
-              Register
-            </Nav.Link>
-             <Nav.Link as={NavLink} to="/auth">
-              Login 
-            </Nav.Link>
+            
+            {isAuthenticated ? (
+              <>
+                <Nav.Link className="text-light">
+                  Welcome, {user?.username || user?.email}!
+                </Nav.Link>
+                <Button 
+                  variant="outline-light" 
+                  size="sm" 
+                  onClick={handleLogout}
+                  className="ms-2"
+                >
+                  Logout
+                </Button>
+              </>
+            ) : (
+              <>
+                <Nav.Link as={NavLink} to="/register">
+                  Register
+                </Nav.Link>
+                <Nav.Link as={NavLink} to="/login">
+                  Login 
+                </Nav.Link>
+              </>
+            )}
           </Nav>
         </Navbar.Collapse>
       </Container>

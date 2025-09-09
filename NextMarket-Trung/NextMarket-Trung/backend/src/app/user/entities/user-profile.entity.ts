@@ -34,9 +34,10 @@ export class UserProfile {
   @Column({ type: 'datetime', nullable: true })
   created_at!: Date;
 
-@OneToOne(() => User, (user) => user.profile)
-@JoinColumn({ name: 'user_id' })
-user!: User;
+ // Foreign key ở đây, pointing tới User
+  @OneToOne(() => User, (user) => user.profile)
+  @JoinColumn({ name: 'user_id' }) // Chỉ định column name
+  user!: User;
 
 
 }

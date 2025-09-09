@@ -13,6 +13,24 @@ export interface LoginFormData {
   email: string;
   password: string;
 }
+// User interface for authenticated user
+export interface User {
+  id: number;
+  uuid: string;
+  email: string;
+  username: string;
+  profile?: {
+    full_name?: string;
+    phone?: string;
+    gender?: string;
+  };
+}
+// Login response interface
+export interface LoginResponse {
+  access_token: string;
+  user: User;
+}
+
 // types/Product.ts
 export interface Product {
   id: number;

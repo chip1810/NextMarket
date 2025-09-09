@@ -8,12 +8,14 @@ import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
 import { UnauthorizedException } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService,
   ) {}
 
   async register(dto: CreateUserDto) {
@@ -39,30 +41,80 @@ export class UserService {
       },
     });
 
-    return await this.userRepository.save(user); // cascade save luôn profile
+    const savedUser = await this.userRepository.save(user);
+    
+    // Remove password from response
+    const { password, ...userWithoutPassword } = savedUser;
+    return userWithoutPassword;
   }
+
   async login(dto: LoginDto) {
-  const user = await this.userRepository.findOne({
-    where: { email: dto.email },
-    relations: ['profile'], // nếu muốn lấy luôn profile
-  });
+    console.log('🔑 Login attempt for:', dto.email);
+    
+    // BỎ RELATIONS ĐỂ TEST
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+      // relations: ['profile'], // COMMENT OUT DÒNG NÀY
+    });
 
-  if (!user) {
-    throw new UnauthorizedException('Invalid credentials');
+    console.log('👤 User found:', !!user);
+    if (!user) {
+      console.log('❌ User not found');
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    console.log('🔐 Comparing passwords...');
+    const isMatch = await bcrypt.compare(dto.password, user.password);
+    console.log('✅ Password match:', isMatch);
+    
+    if (!isMatch) {
+      console.log('❌ Password mismatch');
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    console.log('🎉 Login successful!');
+
+    // Generate JWT payload
+    const payload = { 
+      sub: user.id, 
+      uuid: user.uuid, 
+      email: user.email,
+      username: user.username 
+    };
+    
+    // Generate access token
+    const access_token = this.jwtService.sign(payload);
+
+    // Return user data with token (WITHOUT PROFILE FOR NOW)
+    return {
+      access_token,
+      user: {
+        id: user.id,
+        uuid: user.uuid,
+        email: user.email,
+        username: user.username,
+        // profile: user.profile, // COMMENT OUT
+      }
+    };
   }
 
-  const isMatch = await bcrypt.compare(dto.password, user.password);
-  if (!isMatch) {
-    throw new UnauthorizedException('Invalid credentials');
-  }
+  // Method to verify and decode JWT token
+  async verifyToken(token: string) {
+    try {
+      const payload = this.jwtService.verify(token);
+      const user = await this.userRepository.findOne({
+        where: { id: payload.sub },
+        // relations: ['profile'], // COMMENT OUT
+      });
+      
+      if (!user) {
+        throw new UnauthorizedException('User not found');
+      }
 
-  // Trả về user (có thể trả token nếu muốn JWT)
-  return {
-    id: user.id,
-    uuid: user.uuid,
-    email: user.email,
-    username: user.username,
-    profile: user.profile,
-  };
-}
+      const { password, ...userWithoutPassword } = user;
+      return userWithoutPassword;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
 }
