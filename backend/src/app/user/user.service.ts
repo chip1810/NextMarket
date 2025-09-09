@@ -1,19 +1,20 @@
 // user.service.ts
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { CreateUserDto } from './dto/create-user.dto';
+import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcryptjs';
 import { v4 as uuidv4 } from 'uuid';
-import { UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly jwtService: JwtService, // 👈 inject JwtService
   ) {}
 
   async register(dto: CreateUserDto) {
@@ -39,35 +40,44 @@ export class UserService {
       },
     });
 
-    return await this.userRepository.save(user); // cascade save luôn profile
+    return await this.userRepository.save(user);
   }
-async login(dto: LoginDto) {
-  const user = await this.userRepository.findOne({
-    where: { email: dto.email },
-    relations: [
-      'roles',
-      'roles.role',
-      'roles.role.rolePermissions',
-      'roles.role.rolePermissions.permission',
-    ],
-  });
 
-  if (!user) throw new UnauthorizedException('Invalid credentials');
+  async login(dto: LoginDto) {
+    const user = await this.userRepository.findOne({
+      where: { email: dto.email },
+      relations: [
+        'roles',
+        'roles.role',
+        'roles.role.rolePermissions',
+        'roles.role.rolePermissions.permission',
+      ],
+    });
 
-  const isMatch = await bcrypt.compare(dto.password, user.password);
-  if (!isMatch) throw new UnauthorizedException('Invalid credentials');
+    if (!user) throw new UnauthorizedException('Invalid credentials');
 
-  const permissions = user.roles.flatMap(ur =>
-    ur.role.rolePermissions.map(rp => rp.permission.code)
-  );
+    const isMatch = await bcrypt.compare(dto.password, user.password);
+    if (!isMatch) throw new UnauthorizedException('Invalid credentials');
 
-  return {
-    id: user.id,
-    email: user.email,
-    roles: user.roles.map(ur => ur.role.name),
-    permissions,
-  };
-}
+    const permissions = user.roles.flatMap(ur =>
+      ur.role.rolePermissions.map(rp => rp.permission.code),
+    );
 
+    const payload = {
+      sub: user.id,
+      email: user.email,
+      roles: user.roles.map(ur => ur.role.name),
+      permissions,
+    };
 
+    const token = await this.jwtService.signAsync(payload);
+
+    return {
+      id: user.id,
+      email: user.email,
+      roles: user.roles.map(ur => ur.role.name),
+      permissions,
+      token, // 👈 JWT token
+    };
+  }
 }

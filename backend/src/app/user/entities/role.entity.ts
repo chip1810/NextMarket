@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { UserRole } from './user-role.entity';
 import { RolePermission } from './role-permission.entity';
-
+import { Generated } from 'typeorm';
 
 @Entity('roles')
 export class Role {
@@ -9,6 +9,8 @@ export class Role {
   id!: number;
 
   @Column()
+  @Generated('uuid')   // ✅ Tự generate uuid
+
   uuid!: string;
 
   @Column()

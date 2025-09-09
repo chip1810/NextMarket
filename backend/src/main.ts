@@ -2,7 +2,6 @@
 import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
-import session from 'express-session';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
@@ -11,34 +10,20 @@ async function bootstrap() {
   const globalPrefix = '';
   app.setGlobalPrefix(globalPrefix);
 
-  // CORS: lưu ý origin = FE origin, credentials: true để cookie được gửi
+  // CORS cho FE
   app.enableCors({
-    origin: 'http://localhost:4200', // hoặc http://localhost:4200 tùy FE
+    origin: 'http://localhost:4200',
     credentials: true,
   });
 
-  // express-session (development: MemoryStore). Đổi store cho production.
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'change_this_secret',
-      resave: false,
-      saveUninitialized: false,
-      cookie: {
-        maxAge: 1000 * 60 * 60, // 1h
-        sameSite: 'lax', // localhost thường dùng 'lax'
-        secure: false, // true nếu dùng https
-      },
-    }),
-  );
-
-  // Swagger (tùy chọn): cho phép cookie auth trong UI
+  // Swagger config
   const config = new DocumentBuilder()
     .setTitle('EveryMart API')
     .setDescription('API documentation for EveryMart')
     .setVersion('1.0')
     .addTag('users')
     .addTag('products')
-    .addCookieAuth('connect.sid') // hiển thị cookie auth trong Swagger UI
+    .addBearerAuth() // ⚡ dùng JWT thay cho cookie session
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

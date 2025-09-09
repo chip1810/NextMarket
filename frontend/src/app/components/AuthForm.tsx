@@ -18,11 +18,6 @@ export const AuthForm: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginFormData>({ email: '', password: '' });
   const [message, setMessage] = useState('');
 
-  const toggleForm = () => {
-    setMessage('');
-    setIsRegister(!isRegister);
-  };
-
   const handleRegisterChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setRegisterData(prev => ({ ...prev, [name]: value }));
@@ -40,36 +35,41 @@ export const AuthForm: React.FC = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(registerData),
-        credentials: 'include', // ⚡ gửi cookie session kèm request
       });
       const data = await res.json();
-      if (res.ok) setMessage('Registration successful! Please login.');
-      else setMessage(data.message || 'Error during registration');
-    } catch (err) {
+      if (res.ok) {
+        setMessage('Registration successful! Please login.');
+        setIsRegister(false); // chuyển sang login form
+      } else {
+        setMessage(data.message || 'Error during registration');
+      }
+    } catch {
       setMessage('Network error');
     }
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      const res = await fetch('http://localhost:3000/users/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(loginData),
-        credentials: 'include', // ⚡ gửi cookie session kèm request
-      });
-      const data = await res.json();
-      if (res.ok) {
-        setMessage('');
-        navigate('/home');
-      } else {
-        setMessage(data.message || 'Login failed');
-      }
-    } catch (err) {
-      setMessage('Network error');
+  e.preventDefault();
+  try {
+    const res = await fetch('http://localhost:3000/users/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(loginData),
+    });
+    const data = await res.json();
+    if (res.ok) {
+      // 🔑 Lưu token vào localStorage
+      localStorage.setItem("token", data.access_token);
+      setMessage('');
+      navigate('/home');
+    } else {
+      setMessage(data.message || 'Login failed');
     }
-  };
+  } catch (err) {
+    setMessage('Network error');
+  }
+};
+
 
   return (
     <div className="container mt-5" style={{ maxWidth: '400px' }}>
@@ -92,7 +92,7 @@ export const AuthForm: React.FC = () => {
         <form onSubmit={handleRegisterSubmit}>
           <input className="form-control mb-2" name="username" placeholder="Username" value={registerData.username} onChange={handleRegisterChange} />
           <input className="form-control mb-2" name="full_name" placeholder="Full Name" value={registerData.full_name} onChange={handleRegisterChange} />
-          <input className="form-control mb-2" name="dob" type="date" placeholder="Date of Birth" value={registerData.dob} onChange={handleRegisterChange} />
+          <input className="form-control mb-2" name="dob" type="date" value={registerData.dob} onChange={handleRegisterChange} />
           <input className="form-control mb-2" name="phone" placeholder="Phone" value={registerData.phone} onChange={handleRegisterChange} />
           <input className="form-control mb-2" name="gender" placeholder="Gender" value={registerData.gender} onChange={handleRegisterChange} />
           <input className="form-control mb-2" name="email" type="email" placeholder="Email" value={registerData.email} onChange={handleRegisterChange} required />

@@ -14,21 +14,31 @@ export const ProductList: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
-    fetch('http://localhost:3000/products', {
-      credentials: 'include', // ⚡ gửi cookie session kèm request
-    })
-      .then(async (res) => {
-        if (!res.ok) {
-          const err = await res.json();
-          throw new Error(err.message || 'Unauthorized');
-        }
-        return res.json();
-      })
-      .then((result) => {
-        setProducts(result.data); // 👈 backend trả về { message, total, data }
-      })
-      .catch((err) => console.error('Fetch products error:', err));
-  }, []);
+  const fetchProducts = async () => {
+    try {
+      const token = localStorage.getItem("token"); // lấy token đã lưu
+      const res = await fetch("http://localhost:3000/products", {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // gửi token kèm request
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error("Unauthorized");
+      }
+
+      const data = await res.json();
+      setProducts(data.data);
+    } catch (err) {
+      console.error("Fetch products error:", err);
+    }
+  };
+
+  fetchProducts();
+}, []);
+
+
 
   return (
     <div className="container mt-4">

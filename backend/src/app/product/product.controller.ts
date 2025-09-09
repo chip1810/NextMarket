@@ -3,10 +3,10 @@ import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { RequirePermissions as Permissions } from '../user/auth/permission.decorator';
 import { PermissionGuard } from '../user/auth/permission.guard';
-import { SessionAuthGuard } from '../user/auth/session-auth.guard';
+import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
 
 @Controller('products')
-@UseGuards(SessionAuthGuard, PermissionGuard) // check login + quyền
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
 
