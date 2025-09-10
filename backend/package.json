@@ -82,5 +82,15 @@
       }
     }
   },
-  "dependencies": {}
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "reflect-metadata": "^0.1.14",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.8.3"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "mysql2": "^3.14.4",
+    "typeorm": "^0.3.26"
+  }
 }

@@ -1,21 +1,17 @@
-import React, { useEffect, useState } from 'react';
+// src/app.tsx
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import { AuthForm } from './components/AuthForm';
+import { ProductList } from './components/ProductList';
 
-function App() {
-  const [data, setData] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:3000/api') // hoặc '/' nếu bạn set proxy
-      .then(res => res.json())
-      .then(json => setData(json.message))
-      .catch(err => console.error(err));
-  }, []);
-
+const App: React.FC = () => {
   return (
-    <div>
-      <h1>Frontend gọi backend:</h1>
-      <p>{data}</p>
-    </div>
+    <Routes>
+      <Route path="/" element={<AuthForm />} />
+      <Route path="/home" element={<ProductList />} />
+      <Route path="*" element={<Navigate to="/" />} />
+    </Routes>
   );
-}
+};
 
 export default App;
