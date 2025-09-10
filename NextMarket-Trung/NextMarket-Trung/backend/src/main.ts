@@ -10,8 +10,6 @@ async function bootstrap() {
 
   const globalPrefix = '';
   app.setGlobalPrefix(globalPrefix);
-
-  // CORS: lưu ý origin = FE origin, credentials: true để cookie được gửi
   app.enableCors({
     origin: 'http://localhost:4200', // hoặc http://localhost:4200 tùy FE
     credentials: true,
@@ -38,6 +36,7 @@ async function bootstrap() {
     .setVersion('1.0')
     .addTag('users')
     .addTag('products')
+    .addBearerAuth() // hiển thị bearer auth trong Swagger UI
     .addCookieAuth('connect.sid') // hiển thị cookie auth trong Swagger UI
     .build();
 

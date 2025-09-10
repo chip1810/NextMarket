@@ -42,7 +42,13 @@ const AppNavbar: React.FC = () => {
             
             {isAuthenticated ? (
               <>
-                <Nav.Link className="text-light">
+                {/* Clickable username that navigates to profile */}
+                <Nav.Link 
+                  as={NavLink} 
+                  to="/profile"
+                  className="text-light fw-bold"
+                  style={{ cursor: 'pointer' }}
+                >
                   Welcome, {user?.username || user?.email}!
                 </Nav.Link>
                 <Button 

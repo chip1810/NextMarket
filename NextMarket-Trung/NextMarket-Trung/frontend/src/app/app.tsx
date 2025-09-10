@@ -7,6 +7,7 @@ import Navbar from "./components/Navbar";
 import {Register} from "./components/Register";
 import { Login } from "./components/Login";
 import { AuthProvider } from "./contexts/AuthContext";
+import { Profile } from "./components/Profile";
 
 const App: React.FC = () => {
   return (
@@ -18,6 +19,7 @@ const App: React.FC = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<Products />} />
+        <Route path="/profile" element={<Profile />} />
       </Routes>
       </div>
       </AuthProvider>

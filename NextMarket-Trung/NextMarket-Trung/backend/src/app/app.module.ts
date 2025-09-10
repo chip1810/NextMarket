@@ -5,6 +5,7 @@ import { UserModule } from './user/user.module';
 import { Product } from './product/product.entity';
 import { User } from './user/entities/user.entity';
 import { UserProfile } from './user/entities/user-profile.entity';
+import { UserAddress } from './user/entities/user-addresses.entity';
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UserProfile } from './user/entities/user-profile.entity';
       username: 'root',
       password: '',
       database: 'ecomer',
-       entities: [Product , User, UserProfile],
+       entities: [Product , User, UserProfile, UserAddress],
       autoLoadEntities: true, // 👈 tự load tất cả entity
       synchronize: false, // không tự tạo bảng, chỉ map
       logging: true,

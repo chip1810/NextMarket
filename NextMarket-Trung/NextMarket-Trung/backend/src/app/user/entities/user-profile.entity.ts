@@ -1,5 +1,5 @@
 // user-profile.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, UpdateDateColumn, CreateDateColumn } from 'typeorm';
 import { User } from './user.entity';
 
 @Entity('user_profiles')
@@ -28,10 +28,10 @@ export class UserProfile {
   @Column({ nullable: true })
   avatar_url!: string;
 
-  @Column({ type: 'text', nullable: true })
+  @CreateDateColumn({ type: 'text', nullable: true })
   bio!: string;
 
-  @Column({ type: 'datetime', nullable: true })
+  @UpdateDateColumn({ type: 'datetime', nullable: true })
   created_at!: Date;
 
  // Foreign key ở đây, pointing tới User

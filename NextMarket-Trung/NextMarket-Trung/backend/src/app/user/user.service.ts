@@ -54,7 +54,7 @@ export class UserService {
     // BỎ RELATIONS ĐỂ TEST
     const user = await this.userRepository.findOne({
       where: { email: dto.email },
-      // relations: ['profile'], // COMMENT OUT DÒNG NÀY
+      relations: ['profile','addresses'], // COMMENT OUT DÒNG NÀY
     });
 
     console.log('👤 User found:', !!user);
@@ -104,7 +104,7 @@ export class UserService {
       const payload = this.jwtService.verify(token);
       const user = await this.userRepository.findOne({
         where: { id: payload.sub },
-        // relations: ['profile'], // COMMENT OUT
+        relations: ['profile','addresses'], // COMMENT OUT
       });
       
       if (!user) {

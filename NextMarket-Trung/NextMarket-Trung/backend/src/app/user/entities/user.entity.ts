@@ -1,6 +1,7 @@
 // user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne,JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne,JoinColumn, CreateDateColumn, UpdateDateColumn, OneToMany} from 'typeorm';
 import { UserProfile } from './user-profile.entity';
+import { UserAddress } from './user-addresses.entity';
 
 @Entity('users')
 export class User {
@@ -23,18 +24,21 @@ export class User {
   status!: string;
 
   @Column({ nullable: true, unique: true })
-  code!: string;
+  code?: string;
 
-  @Column({ type: 'datetime', nullable: true })
+  @CreateDateColumn({ type: 'datetime', nullable: true })
   created_at!: Date;
 
-  @Column({ type: 'datetime', nullable: true })
+  @UpdateDateColumn({ type: 'datetime', nullable: true })
   updated_at!: Date;
 
  @OneToOne(() => UserProfile, (profile) => profile.user, {
     cascade: true,
   })
   profile!: UserProfile;
-
+ @OneToMany(() => UserAddress, (address) => address.user, {
+    cascade: true,
+  })
+  addresses!: UserAddress[];
 
 }

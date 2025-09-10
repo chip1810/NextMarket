@@ -5,16 +5,17 @@ import { UserProfile } from './entities/user-profile.entity';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { JwtModule } from '@nestjs/jwt';
+import { UserAddress } from './entities/user-addresses.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User, UserProfile]),
+  imports: [TypeOrmModule.forFeature([User, UserProfile,UserAddress]),
   JwtModule.register({
       secret: process.env.JWT_SECRET || 'toanpro123',
-      signOptions: { expiresIn: '24h' },
+      signOptions: { expiresIn: '2h' },
     }),
   ],
   providers: [UserService],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [UserService,JwtModule],
 })
 export class UserModule {}
