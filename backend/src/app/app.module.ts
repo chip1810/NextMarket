@@ -7,9 +7,21 @@ import { AdminModule } from './admin/admin.module';
 
 @Module({
   imports: [
+<<<<<<< HEAD
     // Đọc file .env
     ConfigModule.forRoot({
       isGlobal: true, // để tất cả module khác đều dùng được
+=======
+    TypeOrmModule.forRoot({
+      type: 'mysql',
+      host: 'localhost',
+      port: 3306,
+      username: 'root',
+      password: 'nhathuy04@',
+      database: 'EveryMart',
+      autoLoadEntities: true, 
+      synchronize: false, 
+>>>>>>> d72ddc5c09388cc36270ca8f7a1a9bad5246df78
     }),
 
     // Cấu hình DB dùng ConfigService
