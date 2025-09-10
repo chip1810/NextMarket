@@ -61,6 +61,7 @@ export const AuthForm: React.FC = () => {
       // 🔑 Lưu token vào localStorage
       localStorage.setItem("token", data.access_token);
       setMessage('');
+      console.log(res);
       navigate('/home');
     } else {
       setMessage(data.message || 'Login failed');

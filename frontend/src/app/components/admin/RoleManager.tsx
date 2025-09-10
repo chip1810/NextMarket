@@ -17,10 +17,9 @@ export const RoleManager: React.FC = () => {
   const [permissions, setPermissions] = useState<Permission[]>([]);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [selectedPerms, setSelectedPerms] = useState<Set<number>>(new Set());
-  const [newRoleName, setNewRoleName] = useState('');
+  const [roleName, setRoleName] = useState('');
   const token = localStorage.getItem("token");
 
-  // Fetch roles
   const fetchRoles = async () => {
     try {
       const res = await fetch('http://localhost:3000/admin/roles', {
@@ -39,7 +38,6 @@ export const RoleManager: React.FC = () => {
     }
   };
 
-  // Fetch permissions
   const fetchPermissions = async () => {
     try {
       const res = await fetch('http://localhost:3000/admin/permissions', {
@@ -53,15 +51,13 @@ export const RoleManager: React.FC = () => {
     }
   };
 
-  // Chọn role
   const handleSelectRole = (roleId: number) => {
     const role = roles.find(r => r.id === roleId) || null;
     setSelectedRole(role);
+    setRoleName(role?.name || '');
     setSelectedPerms(new Set(role?.permissions.map(p => p.id) || []));
-    setNewRoleName('');
   };
 
-  // Toggle checkbox permission
   const handleTogglePerm = (permId: number) => {
     const newSet = new Set(selectedPerms);
     if (newSet.has(permId)) newSet.delete(permId);
@@ -69,24 +65,44 @@ export const RoleManager: React.FC = () => {
     setSelectedPerms(newSet);
   };
 
-  // Save role (cập nhật hoặc tạo mới)
+  const handleToggleAll = () => {
+    if (selectedPerms.size === permissions.length) {
+      setSelectedPerms(new Set());
+    } else {
+      setSelectedPerms(new Set(permissions.map(p => p.id)));
+    }
+  };
+
   const handleSave = async () => {
     try {
       let roleId = selectedRole?.id;
 
       // Nếu không có role đã chọn -> tạo mới
       if (!roleId) {
-        if (!newRoleName.trim()) {
+        if (!roleName.trim()) {
           alert("Please enter role name");
           return;
         }
         const res = await fetch('http://localhost:3000/admin/roles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ name: newRoleName })
+          body: JSON.stringify({ name: roleName })
         });
         const data = await res.json();
         roleId = data.id || data.data?.id;
+      } else {
+        // Cập nhật tên role nếu thay đổi
+       if (selectedRole && selectedRole.name !== roleName) {
+  await fetch(`http://localhost:3000/admin/roles/${selectedRole.id}`, {
+    method: 'PATCH',
+    headers: { 
+      'Content-Type': 'application/json', 
+      Authorization: `Bearer ${token}` 
+    },
+    body: JSON.stringify({ name: roleName })
+  });
+}
+
       }
 
       // Lấy permission cũ (nếu có)
@@ -115,7 +131,7 @@ export const RoleManager: React.FC = () => {
       fetchRoles();
       setSelectedRole(null);
       setSelectedPerms(new Set());
-      setNewRoleName('');
+      setRoleName('');
       alert('Role saved successfully!');
     } catch (err) {
       console.error(err);
@@ -139,24 +155,26 @@ export const RoleManager: React.FC = () => {
           value={selectedRole?.id || ''}
           onChange={e => handleSelectRole(Number(e.target.value))}
         >
-          <option value="">-- Create New Role --</option>
+          <option value="">-- Create / Select Role --</option>
           {roles.map(r => <option key={r.id} value={r.id}>{r.name}</option>)}
         </select>
-        {!selectedRole && (
-          <input
-            type="text"
-            className="form-control"
-            placeholder="New role name"
-            value={newRoleName}
-            onChange={e => setNewRoleName(e.target.value)}
-          />
-        )}
+
+        <input
+          type="text"
+          className="form-control"
+          placeholder="Role name"
+          value={roleName}
+          onChange={e => setRoleName(e.target.value)}
+        />
       </div>
 
       {/* Permissions checkboxes */}
       <div className="mb-3">
         <label>Permissions:</label>
         <div className="d-flex flex-wrap gap-2 mt-2">
+          <button className="btn btn-sm btn-secondary mb-2" onClick={handleToggleAll}>
+            {selectedPerms.size === permissions.length ? 'Uncheck All' : 'Check All'}
+          </button>
           {permissions.map(p => (
             <label key={p.id} className="form-check form-check-inline">
               <input
