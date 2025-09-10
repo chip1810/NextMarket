@@ -11,22 +11,46 @@ export const PermissionManager: React.FC = () => {
   const [code, setCode] = useState('');
   const [desc, setDesc] = useState('');
 
+  const token = localStorage.getItem("token");
+
   const fetchPerms = async () => {
-    const res = await fetch('http://localhost:3000/admin/permissions');
-    const data = await res.json();
-    setPerms(data);
+    try {
+      const res = await fetch('http://localhost:3000/admin/permissions', {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      if (!res.ok) {
+        console.error("Fetch permissions failed:", res.status, res.statusText);
+        return;
+      }
+      const data = await res.json();
+      setPerms(Array.isArray(data) ? data : data.data || []);
+    } catch (err) {
+      console.error(err);
+      setPerms([]);
+    }
   };
 
   const handleCreatePerm = async () => {
     if (!code || !desc) return;
-    await fetch('http://localhost:3000/admin/permissions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ code, description: desc }),
-    });
-    setCode('');
-    setDesc('');
-    fetchPerms();
+    try {
+      const res = await fetch('http://localhost:3000/admin/permissions', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({ code, description: desc }),
+      });
+      if (!res.ok) {
+        console.error("Create permission failed:", res.status, res.statusText);
+        return;
+      }
+      setCode('');
+      setDesc('');
+      fetchPerms();
+    } catch (err) {
+      console.error(err);
+    }
   };
 
   useEffect(() => {
@@ -42,8 +66,20 @@ export const PermissionManager: React.FC = () => {
         ))}
       </ul>
       <div className="mb-2">
-        <input type="text" className="form-control mb-1" placeholder="Code" value={code} onChange={e => setCode(e.target.value)} />
-        <input type="text" className="form-control mb-1" placeholder="Description" value={desc} onChange={e => setDesc(e.target.value)} />
+        <input 
+          type="text" 
+          className="form-control mb-1" 
+          placeholder="Code" 
+          value={code} 
+          onChange={e => setCode(e.target.value)} 
+        />
+        <input 
+          type="text" 
+          className="form-control mb-1" 
+          placeholder="Description" 
+          value={desc} 
+          onChange={e => setDesc(e.target.value)} 
+        />
         <button className="btn btn-primary w-100" onClick={handleCreatePerm}>Add Permission</button>
       </div>
     </div>
