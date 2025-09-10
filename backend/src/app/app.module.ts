@@ -10,7 +10,7 @@ import { UserModule } from './user/user.module';
       host: 'localhost',
       port: 3306,
       username: 'root',
-      password: '18102004Trung@',
+      password: 'nhathuy04@',
       database: 'EveryMart',
       autoLoadEntities: true, 
       synchronize: false, 
