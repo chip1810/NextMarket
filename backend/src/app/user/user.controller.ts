@@ -35,7 +35,9 @@ async login(@Body() dto: LoginDto) {
   const token = await this.jwtService.signAsync(payload);
 
   return {
+    status: 200,
     message: 'Login successful',
+    data: payload,
     access_token: token,
   };
 }

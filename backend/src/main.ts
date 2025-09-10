@@ -3,9 +3,15 @@ import { Logger } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app/app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true, // chỉ cho phép field được định nghĩa trong DTO
+    forbidNonWhitelisted: true, // nếu có field lạ -> báo lỗi
+    transform: true, // tự động transform kiểu dữ liệu (string -> number)
+  }));
 
   const globalPrefix = '';
   app.setGlobalPrefix(globalPrefix);
