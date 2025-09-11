@@ -183,7 +183,7 @@ export const RoleManager: React.FC = () => {
                 checked={selectedPerms.has(p.id)}
                 onChange={() => handleTogglePerm(p.id)}
               />
-              <span className="form-check-label">{p.code}</span>
+              <span className="form-check-label">{p.description}</span>
             </label>
           ))}
         </div>

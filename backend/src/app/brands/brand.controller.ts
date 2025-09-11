@@ -1,15 +1,17 @@
 import { Controller, Get, Post, Put, Delete, Param, Body, Query, UseGuards, ParseIntPipe } from '@nestjs/common';
-import { ApiTags, ApiQuery, ApiOperation } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { BrandService } from './brand.service';
 import { CreateBrandDto } from './dto/create-brand.dto';
 import { UpdateBrandDto } from './dto/update-brand.dto';
-import { SessionAuthGuard } from '../user/auth/session-auth.guard';
 import { PermissionGuard } from '../user/auth/permission.guard';
 import { RequirePermissions as Permissions } from '../user/auth/permission.decorator';
+import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @ApiTags('brands')
 @Controller('brands')
-@UseGuards(SessionAuthGuard, PermissionGuard)
+@UseGuards(JwtAuthGuard, PermissionGuard)
 export class BrandController {
   constructor(private readonly service: BrandService) {}
    

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, Generated, BeforeInsert } from 'typeorm';
 import { User } from '../user/entities/user.entity';
 
 @Entity('stores')
@@ -7,6 +7,7 @@ export class Store {
   id!: number;
 
   @Column({ type: 'char', length: 36, unique: true })
+  @Generated('uuid')
   uuid!: string;
 
   @Column()
@@ -28,8 +29,14 @@ export class Store {
   @Column({ length: 255, nullable: true })
   logo_url!: string;
 
-  @Column({ length: 255, nullable: true })
+  @Column({ length: 255, default: 'ACTIVE' })
   status!: string;
+  @BeforeInsert()
+setDefaultStatus() {
+  if (!this.status) {
+    this.status = 'ACTIVE';
+  }
+}
 
   @Column({ type: 'datetime', nullable: true })
   created_at!: Date;

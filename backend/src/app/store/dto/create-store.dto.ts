@@ -22,8 +22,4 @@ export class CreateStoreDto {
   @IsString()
   logo_url?: string;
 
-  @ApiPropertyOptional({ description: 'Trạng thái (ACTIVE/INACTIVE)' })
-  @IsOptional()
-  @IsString()
-  status?: string;
 }

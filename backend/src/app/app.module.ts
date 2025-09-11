@@ -1,9 +1,12 @@
+import { CategoryModule } from './categories/category.module';
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { ProductModule } from './product/product.module';
 import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
+import { StoreModule } from './store/store.module';
+import { BrandModule } from './brands/brands.module';
 
 @Module({
   imports: [
@@ -24,13 +27,16 @@ import { AdminModule } from './admin/admin.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_NAME'),
         autoLoadEntities: true,
-        synchronize: true,
+        synchronize: false, //change to true if you want to start server;
       }),
     }),
 
     ProductModule,
     UserModule,
     AdminModule,
+    CategoryModule,
+    StoreModule,
+    BrandModule,
   ],
 })
 export class AppModule {}
