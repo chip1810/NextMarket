@@ -4,7 +4,9 @@ import { ApiTags } from '@nestjs/swagger';
 import { RequirePermissions as Permissions } from '../user/auth/permission.decorator';
 import { PermissionGuard } from '../user/auth/permission.guard';
 import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
 @ApiTags('admin')
 @Controller('admin')
 @UseGuards(JwtAuthGuard, PermissionGuard)

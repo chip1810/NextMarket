@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, Generated } from 'typeorm';
 
 @Entity('brands')
 export class Brand {
@@ -6,6 +6,7 @@ export class Brand {
   id!: number;
 
   @Column({ type: 'char', length: 36, unique: true })
+  @Generated('uuid')
   uuid!: string;
 
   @Column({ length: 255 })

@@ -4,7 +4,12 @@ import { Product } from './product.entity';
 import { RequirePermissions as Permissions } from '../user/auth/permission.decorator';
 import { PermissionGuard } from '../user/auth/permission.guard';
 import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
+import { UpdateProductDto } from './dto/update-product.dto';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
+@ApiBearerAuth('access-token')
+@ApiTags('products')
 @Controller('products')
 @UseGuards(JwtAuthGuard, PermissionGuard)
 export class ProductController {

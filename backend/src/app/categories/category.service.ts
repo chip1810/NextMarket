@@ -5,7 +5,6 @@ import { Category } from './category.entity';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
 import { v4 as uuidv4 } from 'uuid';
-import { find } from 'rxjs';
 
 @Injectable()
 export class CategoryService {
