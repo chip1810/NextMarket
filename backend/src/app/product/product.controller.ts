@@ -3,13 +3,7 @@ import { ProductService } from './product.service';
 import { Product } from './product.entity';
 import { RequirePermissions as Permissions } from '../user/auth/permission.decorator';
 import { PermissionGuard } from '../user/auth/permission.guard';
-<<<<<<< HEAD
 import { JwtAuthGuard } from '../user/auth/jwt-auth.guard';
-=======
-import { SessionAuthGuard } from '../user/auth/session-auth.guard';
-import { UpdateProductDto } from './dto/update-product.dto';
-import { Permission } from '../user/entities/permission.entity';
->>>>>>> d72ddc5c09388cc36270ca8f7a1a9bad5246df78
 
 @Controller('products')
 @UseGuards(JwtAuthGuard, PermissionGuard)
@@ -47,7 +41,7 @@ export class ProductController {
 
   @Put(':id')
   @Permissions('update_product')
-  async update(@Param('id') id: number,@Body()dto:UpdateProductDto){
+  async update(@Param('id') id: number,@Body()dto: UpdateProductDto){
     const data = await this.productService.update(id,dto)
     return data
 
