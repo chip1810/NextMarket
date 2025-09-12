@@ -16,7 +16,6 @@ import { UserRoleModule } from './modules/user-role/user-role.module';
     // Đọc file .env
     ConfigModule.forRoot({
       isGlobal: true, // để tất cả module khác đều dùng được
-      envFilePath: './config/.env',
     }),
 
     // Cấu hình DB dùng ConfigService
