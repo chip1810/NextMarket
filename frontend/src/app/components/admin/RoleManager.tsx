@@ -20,27 +20,31 @@ export const RoleManager: React.FC = () => {
   const [roleName, setRoleName] = useState('');
   const token = localStorage.getItem("token");
 
-  const fetchRoles = async () => {
-    try {
-      const res = await fetch('http://localhost:3000/admin/roles', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      if (!res.ok) return;
-      const data = await res.json();
-      const rolesWithPerms: Role[] = (data.data || data).map((r: any) => ({
-        id: r.id,
-        name: r.name,
-        permissions: r.rolePermissions ? r.rolePermissions.map((rp: any) => rp.permission) : []
-      }));
-      setRoles(rolesWithPerms);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  // Lấy danh sách roles
+  // FE: fetchRoles
+const fetchRoles = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/role-permissions/roles-with-count", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const rolesWithPerms: Role[] = (data.data || data).map((r: any) => ({
+      id: r.id,
+      name: r.name,
+      permissions: r.permissions || []   // ✅ lấy trực tiếp từ API
+    }));
+    setRoles(rolesWithPerms);
+  } catch (err) {
+    console.error(err);
+  }
+};
 
+
+  // Lấy danh sách permissions
   const fetchPermissions = async () => {
     try {
-      const res = await fetch('http://localhost:3000/admin/permissions', {
+      const res = await fetch('http://localhost:3000/permissions', {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) return;
@@ -77,13 +81,13 @@ export const RoleManager: React.FC = () => {
     try {
       let roleId = selectedRole?.id;
 
-      // Nếu không có role đã chọn -> tạo mới
+      // Nếu chưa có role → tạo mới
       if (!roleId) {
         if (!roleName.trim()) {
           alert("Please enter role name");
           return;
         }
-        const res = await fetch('http://localhost:3000/admin/roles', {
+        const res = await fetch('http://localhost:3000/roles', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ name: roleName })
@@ -92,26 +96,25 @@ export const RoleManager: React.FC = () => {
         roleId = data.id || data.data?.id;
       } else {
         // Cập nhật tên role nếu thay đổi
-       if (selectedRole && selectedRole.name !== roleName) {
-  await fetch(`http://localhost:3000/admin/roles/${selectedRole.id}`, {
-    method: 'PATCH',
-    headers: { 
-      'Content-Type': 'application/json', 
-      Authorization: `Bearer ${token}` 
-    },
-    body: JSON.stringify({ name: roleName })
-  });
-}
-
+        if (selectedRole && selectedRole.name !== roleName) {
+          await fetch(`http://localhost:3000/roles/${selectedRole.id}`, {
+            method: 'PATCH',
+            headers: { 
+              'Content-Type': 'application/json', 
+              Authorization: `Bearer ${token}` 
+            },
+            body: JSON.stringify({ name: roleName })
+          });
+        }
       }
 
-      // Lấy permission cũ (nếu có)
+      // Permission cũ
       const oldPermIds = selectedRole?.permissions.map(p => p.id) || [];
 
-      // Xóa permission cũ không còn check
+      // Xóa permission không còn check
       for (const pid of oldPermIds) {
         if (!selectedPerms.has(pid)) {
-          await fetch(`http://localhost:3000/admin/roles/${roleId}/permissions/${pid}`, {
+          await fetch(`http://localhost:3000/role-permissions/roles/${roleId}/permissions/${pid}`, {
             method: 'DELETE',
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -121,7 +124,7 @@ export const RoleManager: React.FC = () => {
       // Thêm permission mới
       for (const pid of Array.from(selectedPerms)) {
         if (!oldPermIds.includes(pid)) {
-          await fetch(`http://localhost:3000/admin/roles/${roleId}/permissions/${pid}`, {
+          await fetch(`http://localhost:3000/role-permissions/roles/${roleId}/permissions/${pid}`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${token}` }
           });
@@ -147,7 +150,6 @@ export const RoleManager: React.FC = () => {
     <div>
       <h4>Role Manager</h4>
 
-      {/* Chọn role hoặc tạo mới */}
       <div className="mb-3">
         <label>Role:</label>
         <select
@@ -168,7 +170,6 @@ export const RoleManager: React.FC = () => {
         />
       </div>
 
-      {/* Permissions checkboxes */}
       <div className="mb-3">
         <label>Permissions:</label>
         <div className="d-flex flex-wrap gap-2 mt-2">

@@ -15,7 +15,7 @@ export const PermissionManager: React.FC = () => {
 
   const fetchPerms = async () => {
     try {
-      const res = await fetch('http://localhost:3000/admin/permissions', {
+      const res = await fetch('http://localhost:3000/permissions', {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) {
@@ -33,7 +33,7 @@ export const PermissionManager: React.FC = () => {
   const handleCreatePerm = async () => {
     if (!code || !desc) return;
     try {
-      const res = await fetch('http://localhost:3000/admin/permissions', {
+      const res = await fetch('http://localhost:3000/permissions', {
         method: 'POST',
         headers: { 
           'Content-Type': 'application/json',
