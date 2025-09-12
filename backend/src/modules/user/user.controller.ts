@@ -1,9 +1,10 @@
-import { Controller, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiBody, ApiOperation } from '@nestjs/swagger';
+import { Controller, Post, Body, Get } from '@nestjs/common';
+import { ApiTags, ApiBody, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
+
 
 @ApiTags('users')
 @Controller('users')
@@ -12,6 +13,12 @@ export class UserController {
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
+
+  @Get()
+  @ApiOperation({ summary: 'Get all users' })
+  getAllUsers() {
+    return this.userService.findAllUsers();
+  }
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })

@@ -15,29 +15,45 @@ export class RolePermissionService {
     @InjectRepository(Permission) private permRepo: Repository<Permission>,
   ) {}
 
+  // Lấy tất cả roles kèm permissions
   async findAllRolesWithCount() {
-    const roles = await this.roleRepo.find();
-    return Promise.all(
-      roles.map(async r => ({
-        ...r,
-        permissionCount: await this.rpRepo.count({ where: { role: { id: r.id } } }),
+    const roles = await this.roleRepo.find({
+      relations: ['rolePermissions', 'rolePermissions.permission'],
+    });
+
+    return roles.map(role => ({
+      id: role.id,
+      name: role.name,
+      permissionCount: role.rolePermissions.length,
+      permissions: role.rolePermissions.map(rp => ({
+        id: rp.permission.id,
+        code: rp.permission.code,
+        description: rp.permission.description,
       })),
-    );
+    }));
   }
 
+  // Gán permission cho role
   async assignPermission(roleId: number, permId: number) {
     const role = await this.roleRepo.findOne({ where: { id: roleId } });
     const perm = await this.permRepo.findOne({ where: { id: permId } });
     if (!role || !perm) throw new NotFoundException('Role or Permission not found');
 
-    const exist = await this.rpRepo.findOne({ where: { role: { id: roleId }, permission: { id: permId } } });
+    const exist = await this.rpRepo.findOne({
+      where: { role: { id: roleId }, permission: { id: permId } },
+    });
     if (exist) throw new BadRequestException('Permission already assigned');
 
-    return this.rpRepo.save(this.rpRepo.create({ role, permission: perm, uuid: uuidv4() }));
+    return this.rpRepo.save(
+      this.rpRepo.create({ role, permission: perm, uuid: uuidv4() }),
+    );
   }
 
+  // Xóa permission khỏi role
   async removePermission(roleId: number, permId: number) {
-    const rp = await this.rpRepo.findOne({ where: { role: { id: roleId }, permission: { id: permId } } });
+    const rp = await this.rpRepo.findOne({
+      where: { role: { id: roleId }, permission: { id: permId } },
+    });
     if (!rp) throw new NotFoundException('Permission not assigned');
     return this.rpRepo.remove(rp);
   }

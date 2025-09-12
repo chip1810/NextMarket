@@ -17,6 +17,10 @@ export class UserService {
     private readonly jwtService: JwtService, // 👈 inject JwtService
   ) {}
 
+   findAllUsers() {
+    return this.userRepository.find();
+  }
+  
   async register(dto: CreateUserDto) {
     const exist = await this.userRepository.findOne({ where: { email: dto.email } });
     if (exist) throw new BadRequestException('Email already exists');

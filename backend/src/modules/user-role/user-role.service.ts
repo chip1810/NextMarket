@@ -15,6 +15,7 @@ export class UserRoleService {
     @InjectRepository(Role) private roleRepo: Repository<Role>,
   ) {}
 
+  
   getAllUserRoles() {
     return this.urRepo.find({ relations: ['user', 'role'] });
   }
