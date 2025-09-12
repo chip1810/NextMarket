@@ -10,22 +10,15 @@ import { RoleModule } from './modules/role/role.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { RolePermissionModule } from './modules/role-permission/role-permission.module';
 import { UserRoleModule } from './modules/user-role/user-role.module';
-<<<<<<< HEAD
 import { join } from 'path';
-=======
 import { ProductCollectionModule } from './modules/product_collection/product_collection.module';
->>>>>>> 6c756844907cda5e3c93477cd26c1037a8739b73
 
 @Module({
   imports: [
     // Đọc file .env
     ConfigModule.forRoot({
-<<<<<<< HEAD
       isGlobal: true, // để tất cả module khác đều dùng được
       envFilePath: join(process.cwd(), 'backend', 'src', 'config', '.env'),
-=======
-      isGlobal: true,
->>>>>>> 6c756844907cda5e3c93477cd26c1037a8739b73
     }),
 
     // Cấu hình DB dùng ConfigService
