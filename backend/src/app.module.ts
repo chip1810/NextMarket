@@ -14,25 +14,31 @@ import { UserRoleModule } from './modules/user-role/user-role.module';
 @Module({
   imports: [
     // Đọc file .env
-    ConfigModule.forRoot({
-      isGlobal: true, // để tất cả module khác đều dùng được
-      envFilePath: './config/.env',
-    }),
-
+ConfigModule.forRoot({
+  isGlobal: true,
+}),
+    
     // Cấu hình DB dùng ConfigService
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: (configService: ConfigService) => ({
-        type: 'mysql',
-        host: configService.get<string>('DB_HOST'),
-        port: configService.get<number>('DB_PORT'),
-        username: configService.get<string>('DB_USERNAME'),
-        password: configService.get<string>('DB_PASSWORD'),
-        database: configService.get<string>('DB_NAME'),
-        autoLoadEntities: true,
-        synchronize: false, //change to true if you want to start server;
-      }),
+      useFactory: (configService: ConfigService) => {
+  console.log('DB_HOST:', configService.get('DB_HOST'));
+  console.log('DB_NAME:', configService.get('DB_USERNAME'));
+  console.log('DB_PASSWORD:', configService.get('DB_PASSWORD'));
+
+  return {
+    type: 'mysql',
+    host: configService.get<string>('DB_HOST'),
+    port: configService.get<number>('DB_PORT'),
+    username: configService.get<string>('DB_USERNAME'),
+    password: configService.get<string>('DB_PASSWORD'),
+    database: configService.get<string>('DB_NAME'),
+    autoLoadEntities: true,
+    synchronize: false,
+    logging: true,
+  };
+},
     }),
 
     ProductModule,
